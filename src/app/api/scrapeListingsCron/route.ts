@@ -5,6 +5,9 @@ import scrapeData from "./webscrape";
 import { getAdminDB } from "../../db";
 import { v5 } from 'uuid';
 
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
     async function addNewListings(listings: UprightBassListing[]) {
         console.log("inside addListings");
