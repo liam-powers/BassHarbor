@@ -1,0 +1,39 @@
+{
+  "name": "bassharbor",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@instantdb/admin": "^0.14.27",
+    "@instantdb/react": "^0.14.27",
+    "@nextui-org/input": "^2.2.5",
+    "@nextui-org/system": "^2.2.6",
+    "@nextui-org/theme": "^2.2.11",
+    "firebase-admin": "^12.7.0",
+    "framer-motion": "^11.11.11",
+    "next": "15.0.3",
+    "ofetch": "^1.4.1",
+    "puppeteer": "^23.7.1",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2",
+    "rc-slider": "^11.1.7",
+    "react": "19.0.0-rc-66855b96-20241106",
+    "react-dom": "19.0.0-rc-66855b96-20241106",
+    "uuid": "^11.0.3"
+  },
+  "devDependencies": {
+    "typescript": "^5",
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.1",
+    "eslint": "^8",
+    "eslint-config-next": "15.0.3"
+  }
+}
