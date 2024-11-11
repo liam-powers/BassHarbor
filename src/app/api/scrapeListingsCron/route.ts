@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { UprightBassListing } from "@/app/interfaces/Interfaces";
 import { tx } from '@instantdb/admin';
-import scrapeData from "./webscrape";
+import scrapeData from "@/server/webscrape";
 import { getAdminDB } from "../../db";
 import { v5 } from 'uuid';
 

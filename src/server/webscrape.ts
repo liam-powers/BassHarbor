@@ -1,11 +1,9 @@
 import puppeteerExtra from "puppeteer-extra";
 import StealthPlugin from "puppeteer-extra-plugin-stealth";
-import type { UprightBassListing } from "../../interfaces/Interfaces";
+import type { UprightBassListing } from "@/app/interfaces/Interfaces";
 import pLimit from "p-limit";
 
 const limit = pLimit(4);
-
-// const puppeteer = puppeteerExtra as any;
 
 const objList: UprightBassListing[] = [];
 
