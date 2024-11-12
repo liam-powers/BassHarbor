@@ -17,50 +17,47 @@ export async function GET() {
         }
 
         try {
-            for (const listingData of listings) {
-                if (!listingData || !listingData.listingLink) continue;
-                console.log("creating listing with link: ", listingData.listingLink);
-
+            let listingsAdded = 0;
+            for (const listing of listings) {
                 const NAMESPACE = '6ba7b810-9dad-11d1-80b4-00c04fd430c8';
 
                 function generateUUIDFromLink(link: string): string {
                     return v5(link, NAMESPACE);
                 }
 
-                const newId = generateUUIDFromLink(listingData.listingLink);
+                const newId = generateUUIDFromLink(listing.link);
 
                 if (!newId) {
                     console.error("Failed to generate a valid document ID");
                     continue;
                 }
 
-                console.log("Adding listing with ID:", newId);
-
                 const transaction = tx.upright[newId].update({
-                    ...listingData,
+                    ...listing,
                     createdAt: Date.now(),
                 })
 
                 db.transact([
                     transaction
                 ]);
+                listingsAdded++;
             }
 
-            console.log("Successfully added all listings");
+            console.log(`Successfully added or updated ${listingsAdded} listings`);
         } catch (error) {
             console.error("Error adding listings: ", error);
-            throw error;
         }
     }
 
     try {
         console.log("Now inside scrapeAndAdd function...");
         const scrapeObject = {
-            talkBass: false,
-            scrapeBassChatData: true,
+            scrapeTalkbassData: true,
+            scrapeBasschatData: true,
         };
 
-        const uprightListings = await scrapeData(scrapeObject);
+        const uprightListings: UprightBassListing[] = await scrapeData(scrapeObject);
+        console.log(`scrapeListingsCron received ${uprightListings.length} listings`);
         await addNewListings(uprightListings);
 
         return NextResponse.json({

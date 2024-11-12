@@ -4,25 +4,12 @@ import { UprightBassFilters, UprightBassListing } from "../interfaces/Interfaces
 import UprightFilterButton from "./UprightFilterButton";
 import PriceRangeComponent from "./PriceRangeComponent";
 import UprightListingsGrid from "./UprightListingsGrid";
-// import { ofetch } from "ofetch";
 import dbFetchListings from "@/app/utils/dbFetchListings";
 import "rc-slider/assets/index.css";
 
 const updateListings = async (filters: UprightBassFilters): Promise<UprightBassListing[]> => {
-    // const functionUrl = "https://fetchlistings-jgzal2tqsa-uc.a.run.app"; // production URL
-
     try {
         console.log("updateListings: received filters: ", filters);
-        // const response = await ofetch(functionUrl, {
-        //     method: "POST",
-        //     body: {
-        //         priceRange: filters.priceRange,
-        //         keywords: filters.keywords,
-        //         carved: filters.carved,
-        //         hybrid: filters.hybrid,
-        //         plywood: filters.plywood,
-        //     }
-        // });
         const response = await dbFetchListings(filters);
         if (!response) {
             throw new Error("fetchListings response is undefined!");

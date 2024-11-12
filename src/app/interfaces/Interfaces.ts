@@ -1,14 +1,14 @@
 export interface UprightBassListing {
-    title?: string,
-    imgLink: string,
-    listingLink?: string,
-    location?: string,
-    saleStatus?: string,
-    price?: number,
+    title: string,
+    link: string,
+    image: string,
+    price: number,
+    currency: string,
+    source: string,
+    lastActivity: number,
+    location: string,
     year?: number,
     maker?: string,
-    source?: string,
-    createdAt?: number,
 }
 
 export interface CommonFilters {

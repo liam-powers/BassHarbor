@@ -10,55 +10,48 @@ interface UprightListingsProps {
 export default function UprightListingsGrid({ listings }: UprightListingsProps) {
     return (
         <div className="grid grid-cols-4 gap-10">
-            {listings.map((listing, index) => (
-                <div key={index}>
-                    {listing?.imgLink?.toString() ? <Image
-                        src={listing?.imgLink?.toString()}
-                        width={500}
-                        height={500}
-                        alt={`Picture of listing ${listing.title}`}
-                    /> : null}
-                    <a
-                        className="text-pastel-red underline"
-                        href={listing.listingLink}
-                        rel="noopener noreferrer"
-                        target="_blank"
-                    >
-                        {listing.title}
-                    </a>
-                    {/* TODO: Unscuff this */}
-                    <div>
-                        {listing.source === "talkbass" ? (
-                            <span>
-                                <span className="font-extrabold">Price:</span> ${listing.price}
-                            </span>
-                        ) : listing.source === "basschat" ? (
-                            <span>
-                                <span className="font-extrabold">Price:</span> £{listing.price}
-                            </span>
-                        ) : (
-                            <span>
-                                <span className="font-extrabold">Price:</span> {listing.price}
-                            </span>
-                        )}
-                    </div>
-                    {listing.location ? (
+            {listings.map((listing, index) => {
+                const lastActivityDate = new Date(listing.lastActivity);
+                const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+                const formattedLastActivity = monthNames[lastActivityDate.getMonth()] + " " + lastActivityDate.getDate() + ", " + lastActivityDate.getFullYear();
+                return (
+                    <div key={index}>
+                        {listing.image.toString() ? <Image
+                            src={listing.image.toString()}
+                            width={500}
+                            height={500}
+                            alt={`Picture of listing ${listing.title}`}
+                        /> : null}
+                        <a
+                            className="text-pastel-red underline"
+                            href={listing.link}
+                            rel="noopener noreferrer"
+                            target="_blank"
+                        >
+                            {listing.title}
+                        </a>
+                        <div>
+                            <span className="font-extrabold">Price:</span> {listing.currency}{listing.price}
+                        </div>
                         <div>
                             <span className="font-extrabold">Location:</span>{" "}
                             {listing.location}
                         </div>
-                    ) : null}
-                    {listing.year ? (
+                        {listing.year ? (
+                            <div>
+                                <span className="font-extrabold">Year:</span> {listing.year}
+                            </div>
+                        ) : null}
                         <div>
-                            <span className="font-extrabold">Year:</span> {listing.year}
+                            <span className="font-extrabold">Last Active</span>: {formattedLastActivity}
                         </div>
-                    ) : null}
-                    <div>
-                        {" "}
-                        <span className="font-extrabold">{listing.saleStatus}</span>
+                        <div>
+                            <span className="font-extrabold">Source</span>: {listing.source}
+                        </div>
+
                     </div>
-                </div>
-            ))}
+                )
+            })}
         </div>
     );
 };
