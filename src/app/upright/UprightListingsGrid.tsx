@@ -16,12 +16,14 @@ export default function UprightListingsGrid({ listings }: UprightListingsProps) 
                 const formattedLastActivity = monthNames[lastActivityDate.getMonth()] + " " + lastActivityDate.getDate() + ", " + lastActivityDate.getFullYear();
                 return (
                     <div key={index}>
-                        {listing.image.toString() ? <Image
-                            src={listing.image.toString()}
-                            width={500}
-                            height={500}
-                            alt={`Picture of listing ${listing.title}`}
-                        /> : null}
+                        {listing.image.toString() ?
+                            <Image
+                                src={listing.image.toString()}
+                                width={400}
+                                height={400}
+                                alt={`Picture of listing ${listing.title}`}
+                                className="w-full h-[300px] object-cover"
+                            /> : null}
                         <a
                             className="text-pastel-red underline"
                             href={listing.link}

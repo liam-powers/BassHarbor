@@ -3,9 +3,9 @@ import { ofetch } from "ofetch";
 import * as cheerio from "cheerio";
 
 export default async function scrapeData(toScrape: {
-    scrapeTalkbassData?: boolean;
     scrapeBasschatData?: boolean;
-    scrapeReverbData?: boolean;
+    scrapeUptonbassData?: boolean;
+    scrapeBasscellarData?: boolean;
 }): Promise<UprightBassListing[]> {
     try {
         const listings: UprightBassListing[] = [];
@@ -13,9 +13,13 @@ export default async function scrapeData(toScrape: {
             const basschatListings = await scrapeSource("basschat");
             listings.push(...basschatListings);
         }
-        if (toScrape.scrapeTalkbassData) {
-            // const talkbassListings = await scrapeSource("talkbass");
-            // listings.push(...talkbassListings);
+        if (toScrape.scrapeUptonbassData) {
+            const uptonbassListings = await scrapeSource("uptonbass");
+            listings.push(...uptonbassListings);
+        }
+        if (toScrape.scrapeBasscellarData) {
+            const basscellarListings = await scrapeSource("basscellar");
+            listings.push(...basscellarListings);
         }
         return listings;
     } catch (error) {
@@ -32,26 +36,94 @@ const sourceInfo = {
             aTag: ".ipsDataItem_main > .ipsDataItem_title.ipsContained_container > span > a",
             image: ".ipsDataItem.ipsDataItem_responsivePhoto > .tthumb_wrap > a > .tthumb_standard",
             lastActivity: "ul.ipsDataItem_lastPoster.ipsDataItem_withPhoto.ipsType_blendLinks > li.ipsType_light > a.ipsType_blendLinks > time",
-            priceLocation: ".ipsType_pageTitle.ipsContained_container",
+            price: ".ipsType_pageTitle.ipsContained_container",
+            location: ".ipsType_pageTitle.ipsContained_container",
             description: ".ipsType_normal.ipsType_richText.ipsPadding_bottom.ipsContained",
-        }
-    }
+        },
+        urlInfo: {
+            baseUrl: "https://www.basschat.co.uk/forum/76-eubs-double-basses-for-sale",
+            pageRequestType: "urlParams"
+        },
+    },
+    uptonbass: {
+        htmlPaths: {
+            pageCounter: "",
+            allListingsOnPage: "",
+            aTag: "",
+            image: "",
+            lastActivity: "",
+            price: "",
+            location: "",
+            description: "",
+        },
+        urlInfo: {
+            baseUrl: "https://uptonbass.com/product-category/vintage-used-basses/vintage-used-double-basses",
+            pageRequestType: "urlParams",
+        },
+    },
+    basscellar: {
+        htmlPaths: {
+            pageCounter: "",
+            allListingsOnPage: "",
+            aTag: "",
+            image: "",
+            lastActivity: "",
+            price: "",
+            location: "",
+            description: "",
+        },
+        urlInfo: {
+            baseUrl: "https://basscellar.com/product-category/basses/basses-under-7-5k/",
+            pageRequestType: "urlParams",
+        },
+    },
 }
+
+async function tryFetchHtmlToCheerio(url: string, source: string): Promise<cheerio.CheerioAPI> {
+    let res: string;
+
+    if (["basschat", "uptonbass", "basscellar"].includes(source)) {
+        res = await ofetch(url);
+        const headers = {
+            Host: "reverb.com",
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:132.0) Gecko/20100101 Firefox/132.0",
+            Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "Accept-Language": "en-US,en;q=0.5",
+            "Accept-Encoding": "gzip, deflate, br, zstd",
+            Referer: "https://www.google.com/",
+            Connection: "keep-alive",
+            Cookie: `elog-analytics-2={"lastSeen":1731384468168,"id":"dec7d1c7-05bd-4a2e-b081-e000968ef9fd","sessionID":"6f25e800-39e0-4abc-9439-e6997696067e"}; reverb_user_shipping_region=US_CON; reverb_user_currency=USD; reverb_user_locale=en; reverb_user_country_code=US; csrf_token=Ft8IJMSxW6wnwBuKYvlEFq8DrWA0bnLhVVQTvTAscNOPEwiADJCUUDVzDWrPnlgsR_xb_wTmo2oIsv6DskQUAA; _reverb_session=OGVFb203L0JlQU9ldVBrNGpNdGIzSnllT1Zqaml2T3NVZlljZ0FvaHkxdzEvaTBmT2JHa3B2RHFxc3Fmdmd6UDBHOW5FOU54RWhYSHhvTDhXcmxXblZhTzZwcStiSEJqTWR5dDNTVU9qQTdtYkQ2YVhwVk5hdXdneTlSRTA0UDBtck1obGY0Tmh2akp3QXRNOFRYeFlZOTRxaXhpTmRvV0dLVkVFanZ0Z0hBdVNJdFRnQjVkTFJnb0pWWXRSeEJKME4ycjU5Vi9yRnB0QWp6K0U1bWhWRGwwYk51V011OFRhNU82czZXZUQwbThRT2xkbVFGU0ZDSnFLSzh6ZUJzWGRZalZVNEl6RG1BSjNicmxoOUJCYjE3NmE0L0hJNzc5NmNiOWpEMlI4L01OdnU4a01RQmZIdktGR0pEd0s0QnFaNFhwdFZJQngveWhpcnE3L2p2SGF4ZkhhVXZvWVJCK0EzTlY5UHZKNWxleThZNEJ5eHMxRnBwVWgyaDN5T3ZMbjhiVnBqUjQ0OE1PblRYUFhEcWtHRkNpNEtiRmlMcEVBTlRyU2g1ZWFKU1o3Qnl1NllDemp2MEFKWjcyMVo5eC0tZklocDNzZm5LNXF2aVlpcG5KamVuQT09--ca9074f03f7147702efa076749a14a17e6a2fd61; __cf_bm=oLAQauMaKi07JZO.Ix_2j98_97cxeFj8AH97TafOJhM-1731384282-1.0.1.1-3iplQojoLtHKn43JE7WfLuWwHrM87BlC2.QVZ2i077hqdmdJ6g2L7FsXuFVqM0jsY_m8jnmzvm5xgS1t0VfqNw; reverb_page_views=2; google_cid=undefined`,
+            "Upgrade-Insecure-Requests": "1",
+            "Sec-Fetch-Dest": "document",
+            "Sec-Fetch-Mode": "navigate",
+            "Sec-Fetch-Site": "cross-site",
+            "Sec-Fetch-User": "?1"
+        };
+        res = await ofetch(url, { headers });
+    } else {
+        throw new Error("faulty source in tryFetchHtmlToCheerio");
+    }
+
+    const $ = cheerio.load(res);
+    return $;
+}
+
 
 async function scrapeSource(source: keyof typeof sourceInfo): Promise<UprightBassListing[]> {
     try {
         const listings: UprightBassListing[] = [];
+        console.log(`scraping source ${source}`);
 
-
-
-        let url = "https://www.basschat.co.uk/forum/76-eubs-double-basses-for-sale";
-        const res: string = await ofetch(url);
-        let $ = cheerio.load(res);
+        let url = sourceInfo[source].urlInfo.baseUrl;
+        let $ = await tryFetchHtmlToCheerio(url, source);
 
         // get our number of pages
         const pageCounter = $(sourceInfo[source].htmlPaths.pageCounter).text();
         console.log("pageCounter text:", pageCounter);
-        const numPages = parseInt(pageCounter.split(" ")[3]);
+        let numPages;
+        if (source === "basschat") {
+            numPages = parseInt(pageCounter.split(" ")[3]);
+        }
 
         if (!numPages) {
             throw new Error("Something went wrong finding numPages in scrapeBasschatData!");
@@ -141,7 +213,7 @@ async function scrapeSource(source: keyof typeof sourceInfo): Promise<UprightBas
                 const res: string = await ofetch(url);
                 $ = cheerio.load(res);
 
-                const priceLocationElementContent = $(sourceInfo[source].htmlPaths.priceLocation).html()?.split("<br>");
+                const priceLocationElementContent = $(sourceInfo[source].htmlPaths.price).html()?.split("<br>");
                 if (!priceLocationElementContent) {
                     listingsSkipped++;
                     continue;

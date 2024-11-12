@@ -7,6 +7,7 @@ import { v5 } from 'uuid';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
+export const maxDuration = 60;
 
 export async function GET() {
     async function addNewListings(listings: UprightBassListing[]) {
@@ -50,15 +51,21 @@ export async function GET() {
     }
 
     try {
+        const startTime = Date.now();
         console.log("Now inside scrapeAndAdd function...");
         const scrapeObject = {
-            scrapeTalkbassData: true,
             scrapeBasschatData: true,
+            scrapeBasscellarData: false,
+            scrapeSweetwaterData: false,
         };
 
         const uprightListings: UprightBassListing[] = await scrapeData(scrapeObject);
         console.log(`scrapeListingsCron received ${uprightListings.length} listings`);
         await addNewListings(uprightListings);
+
+        const endTime = Date.now();
+
+        console.log(`Scrape and add process took ${(endTime - startTime) / 1000} seconds`);
 
         return NextResponse.json({
             status: 200,
